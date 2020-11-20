@@ -102,5 +102,20 @@ module.exports = {
 			message: "New product added!"
 		})
 	  
+	},
+
+	deleteProduct: async (req, res) => {
+
+		if(req.session.active){
+			const id = req.params.id
+			console.log(`deleting ${id}`)
+
+			Products.findByIdAndDelete(id)
+			.then((result, err) => {
+				if(err) res.json({success: false, message:"deletion not successful"})
+				else res.json({success: true, message:"succesfully deleted product"})
+			})
+			}
+		else res.json({success:false, message:"where is the admin?"})
 	}
 }

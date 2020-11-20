@@ -65,6 +65,7 @@ app.post('/api/product/:id/edit', (req, res) => productsInfo.editProduct(req, re
 app.post('/api/products/:page', (req, res) => productsInfo.someProducts(req, res))
 app.get('/api/productsQuantity', (req, res) => productsInfo.numOfAllProducts(req, res))
 app.post('/api/productsSearch', (req, res) => productsInfo.searchProducts(req, res))
+app.get('/api/product/:id/delete', (req, res) => productsInfo.deleteProduct(req, res))
 
 app.post('/api/order/create', (req, res) => ordersService.createNewOrder(req, res))
 app.get('/api/order/:id', (req, res) => ordersService.getOrder(req, res))
