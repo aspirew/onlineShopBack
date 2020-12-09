@@ -64,7 +64,7 @@ module.exports = {
 		Products.findByIdAndUpdate(id, {
 			"name": name,
 			"price": price,
-			"quanotity": quantity
+			"quantity": quantity
 		}).then((result, err) => {
 			if(err) res.json({success: false})
 			else res.json({success: true})
@@ -74,33 +74,36 @@ module.exports = {
 	},
 
 	addNewProduct: async (req, res) => {
-		const {name, price, description, quantity, tags} = req.body
-		console.log(price)
+		const {name, price, description, quantity, tags} = req.body.productData
+		const image = req.body.name
 
-		if(!name || !price || !quantity ) {
+		if(!name || !price ) {
 			res.json({success: "false", message: "Brak wymaganych pól"})
 			return
 		}
-		if(!req.file) {
+		if(!image) {
 			res.json({success: "false", message: "Brak zdjęcia"})
 			return
 		}
 
 		const product = new Products({
-			name,
-			price,
-			description,
-			quantity,
-			tags,
-			image_url: req.file.filename
+			name: name,
+			price: price,
+			description: description,
+			quantity: quantity,
+			tags: tags,
+			imageURL: image
 		})
 
 		const result = await product.save()
 		console.log(result)
+
+
 		res.json({
 			success: true,
-			message: "New product added!"
+			message: "Product succesfully added"
 		})
+
 	  
 	}
 }
