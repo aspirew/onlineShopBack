@@ -65,6 +65,8 @@ app.post('/api/product/:id/edit', (req, res) => productsInfo.editProduct(req, re
 app.post('/api/products/:page', (req, res) => productsInfo.someProducts(req, res))
 app.get('/api/productsQuantity', (req, res) => productsInfo.numOfAllProducts(req, res))
 app.post('/api/productsSearch', (req, res) => productsInfo.searchProducts(req, res))
+app.post('/api/product/addImage', imageManage.upload.single('file'), (req, res, err) => imageManage.imageUpload(req, res, err))
+app.post('/api/product/add', imageManage.upload.single('file'), (req, res) => productsInfo.addNewProduct(req, res))
 
 app.post('/api/order/create', (req, res) => ordersService.createNewOrder(req, res))
 app.get('/api/order/:id', (req, res) => ordersService.getOrder(req, res))
@@ -74,9 +76,7 @@ app.get('/api/orders', (req, res) => ordersService.getAllOrders(req, res))
 app.post('/api/admin/login', (req, res) => adminDashboard.login(req, res))
 app.get('/api/admin/isLoggedIn', (req, res) => adminDashboard.isLoggedIn(req, res))
 
-// app.post('/api/image/upload', 
-// imageManage.upload.single('file'), 
-// (req, res) => productsInfo.addNewProduct(req, res))
+app.get('/api/images/:name', (req, res) => imageManage.getImage(req, res))
 
 
 app.get('/api/constants', (req, res) => res.json({
@@ -87,9 +87,9 @@ app.get('/api/constants', (req, res) => res.json({
 
 //app.use(express.static(path.join(__dirname, './dist')))
 
-//app.get('*', (req, res) => {
- // return res.sendFile(path.join(__dirname, './dist/index.html'))
-//})
+// app.get('*', (req, res) => {
+//  return res.sendFile(path.join(__dirname, './dist/index.html'))
+// })
 
 https.createServer(httpOptions, app)
     .listen(1234, () => {
