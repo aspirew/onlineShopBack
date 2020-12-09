@@ -57,13 +57,16 @@ module.exports = {
 
 	if(req.session.active){
 		const id = req.params.id
-		const {name, price, quantity, image} = req.body
+		const {name, price, quantity, image, description, tags} = req.body
+		console.log(tags)
 
 		Products.findByIdAndUpdate(id, {
 			"name": name,
 			"price": price,
 			"quantity": quantity,
-			"image_url": image
+			"image_url": image,
+			"description": description,
+			"tags": tags
 		}).then((result, err) => {
 			if(err) res.json({success: false})
 			else res.json({success: true})
