@@ -4,7 +4,7 @@ const express = require('express')
 const storage = multer.diskStorage({
     destination: './assets',
     filename: (req, file, cb) => {
-      var filetype = '';
+      let filetype = '';
       if(file.mimetype === 'image/png') {
         filetype = 'png';
       }
@@ -29,6 +29,7 @@ module.exports = {
   }),
 
   imageUpload : (req, res, err) => {
+    if(req.session.active){
     console.log(req.file.filename)
     if(err instanceof multer.MulterError){
       res.json({
@@ -42,8 +43,10 @@ module.exports = {
       success: true,
       name: req.file.filename,
 			message: "New image uploaded"
-		})
+    })
   }
+  }
+  else res.json({success:false, message:"where is the admin?"})
 
   },
 
@@ -52,6 +55,29 @@ module.exports = {
     const path = require('path');
     app.use('/img', express.static(__dirname + '/assets'));
     res.sendFile(path.resolve('assets/' + req.params.name))
+  },
+
+  deleteImage : (req, res) => {
+    if(req.session.active){
+    const fs = require('fs')
+    try {
+      const app = express()
+      const path = require('path');
+      app.use('/img', express.static(__dirname + '/assets'));
+      fs.unlinkSync(path.resolve('assets/' + req.params.name))
+      res.json({
+        success: true,
+        message: `Succesfully deleted ${req.params.name}`
+      })
+    } catch(err) {
+      console.error(err)
+      res.json({
+        success: false,
+        message: `Couldnt delete ${req.params.name}`
+      })
+    }
   }
+  else res.json({success:false, message:"where is the admin?"})
+}
 
 }

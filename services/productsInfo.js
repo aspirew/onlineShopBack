@@ -56,15 +56,17 @@ module.exports = {
 	editProduct: async (req, res) =>{
 
 	if(req.session.active){
-		console.log(req.body)
-		console.log(req.params)
 		const id = req.params.id
-		const {name, price, quantity} = req.body
+		const {name, price, quantity, image, description, tags} = req.body
+		console.log(tags)
 
 		Products.findByIdAndUpdate(id, {
 			"name": name,
 			"price": price,
-			"quantity": quantity
+			"quantity": quantity,
+			"image_url": image,
+			"description": description,
+			"tags": tags
 		}).then((result, err) => {
 			if(err) res.json({success: false})
 			else res.json({success: true})
@@ -92,7 +94,7 @@ module.exports = {
 			description: description,
 			quantity: quantity,
 			tags: tags,
-			imageURL: image
+			image_url: image
 		})
 
 		const result = await product.save()
@@ -103,7 +105,5 @@ module.exports = {
 			success: true,
 			message: "Product succesfully added"
 		})
-
-	  
 	}
 }
