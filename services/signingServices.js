@@ -1,13 +1,18 @@
 const User = require('../models/users')
+const bcrypt = require('bcrypt')
 
 module.exports = {
 
 	login: async (req, res) => {
 
 		const {email, password} = req.body
-		const result = await User.findOne({email : email, password : password})
+		const result = await User.findOne({email : email})
 
-		if(!result){
+		const isSame = await bcrypt.compare(password, result.password);
+
+		console.log(result)
+
+		if(!isSame){
 			console.log("incorrect details!")
 			res.json({
 				success: false,
@@ -38,8 +43,6 @@ module.exports = {
 
 		const existingUser = await User.findOne({email : email})
 
-		console.log(existingUser)
-
 		if(existingUser) {
 			res.json({
 				success: false,
@@ -48,11 +51,17 @@ module.exports = {
 			return
 		}
 
+		const salt = await bcrypt.genSalt(Math.random() * 10 + 1)
+
+		const hash = await bcrypt.hash(password, salt)
+
+		console.log(hash)
+
 		console.log(req.body)
 		const user = new User({
-			username,
-			email,
-			password
+			username: username,
+			email: email,
+			password: hash
 		})
 
 		const result = await user.save()
