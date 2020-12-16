@@ -1,5 +1,5 @@
 const Order = require("../models/order")
-
+const mongoose = require('mongoose');
 const constants = require("../constants")
 
 module.exports = {
@@ -39,6 +39,56 @@ module.exports = {
 		res.json(await Order.find().sort({date: 'desc'}))
 	},
 
+	getSomeOrders: async (req, res) => {
+		const { perPage } = req.body
+		console.log(req.body)
+
+		const result = await Order.find()
+		.skip(perPage * (req.params.page - 1))
+		.limit(perPage)
+
+		 res.json(result)
+	},
+
+	searchOrder:  async (req, res) =>{
+		const { searchPhrase } = req.body
+		console.log(req.body)
+
+		let result
+
+		if (mongoose.Types.ObjectId.isValid(searchPhrase)){
+			result = [await Order.findById(searchPhrase)]
+		}
+		else{
+			result = await Order.find({email: searchPhrase})
+		}
+
+		if(result){
+			res.json({
+				success: true,
+				result: result
+			})
+		}
+		else{
+			res.json({
+				success: false,
+				result: result
+			})
+		}
+
+	},
+
+	changeStatus: async (req, res) => {
+		const {id, status} = req.body
+		await Order.findByIdAndUpdate(id, {
+			status: status
+		}).then((err, result) =>{
+			if(!result)
+				res.json({success: true, message: "Zmieniono status"})
+			else res.json({success: false, message: "Coś poszło nie tak"})
+		})
+	},
+
 	confirmOrder: async (req, res) => {
 		console.log(req.body)
 		const id = req.params.id
@@ -47,8 +97,8 @@ module.exports = {
 			email: email,
 			deliveryDetails: deliveryData,
 			status: constants.order_status[1]
-		}).then((result, err) =>{
-			if(!err)
+		}).then((err, result) =>{
+			if(!result)
 				res.json({success: true, message: "Zamówienie potwierdzone"})
 			else res.json({success: false, message: "Coś poszło nie tak"})
 		})

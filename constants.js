@@ -3,5 +3,5 @@ module.exports = {
     closed_at: [0, 6],
     opened_until: 19,
     hours_interval: 30,
-    order_status: ["being carried out", "finalized", "cancelled"]
+    order_status: ["being carried out", "finalized", "cancelled", "sent"]
 }
