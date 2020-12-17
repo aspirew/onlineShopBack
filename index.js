@@ -67,6 +67,7 @@ app.get('/api/productsQuantity', (req, res) => productsInfo.numOfAllProducts(req
 app.post('/api/productsSearch', (req, res) => productsInfo.searchProducts(req, res))
 app.post('/api/product/addImage', imageManage.upload.single('file'), (req, res, err) => imageManage.imageUpload(req, res, err))
 app.post('/api/product/add', imageManage.upload.single('file'), (req, res) => productsInfo.addNewProduct(req, res))
+app.post('/api/delete/products', (req, res) => productsInfo.deleteProducts(req, res))
 app.get('/api/tags', (req, res) => productsInfo.getAllTags(req, res))
 app.post('/api/tags/add', (req, res) => productsInfo.addNewTags(req, res))
 app.post('/api/tags/delete', (req, res) => productsInfo.deleteTags(req, res))
@@ -75,6 +76,9 @@ app.post('/api/order/create', (req, res) => ordersService.createNewOrder(req, re
 app.get('/api/order/:id', (req, res) => ordersService.getOrder(req, res))
 app.post('/api/order/:id/confirm', (req, res) => ordersService.confirmOrder(req, res))
 app.get('/api/orders', (req, res) => ordersService.getAllOrders(req, res))
+app.post('/api/orders/:page', (req, res) => ordersService.getSomeOrders(req, res))
+app.post('/api/order/search', (req, res) => ordersService.searchOrder(req, res))
+app.post('/api/order/statusChange', (req, res) => ordersService.changeStatus(req, res))
 
 app.post('/api/admin/login', (req, res) => adminDashboard.login(req, res))
 app.get('/api/admin/isLoggedIn', (req, res) => adminDashboard.isLoggedIn(req, res))
@@ -85,7 +89,8 @@ app.get('/api/images/delete/:name', (req, res) => imageManage.deleteImage(req, r
 app.get('/api/constants', (req, res) => res.json({
     STANDARD_HOURS: constants.standard_hours,
     CLOSED_AT: constants.closed_at,
-    OPENED_UNTIL: constants.opened_until
+    OPENED_UNTIL: constants.opened_until,
+    ORDER_STATUS: constants.order_status
 }))
 
 //app.use(express.static(path.join(__dirname, './dist')))
