@@ -68,6 +68,8 @@ app.post('/api/productsSearch', (req, res) => productsInfo.searchProducts(req, r
 app.post('/api/product/addImage', imageManage.upload.single('file'), (req, res, err) => imageManage.imageUpload(req, res, err))
 app.post('/api/product/add', imageManage.upload.single('file'), (req, res) => productsInfo.addNewProduct(req, res))
 app.get('/api/tags', (req, res) => productsInfo.getAllTags(req, res))
+app.post('/api/tags/add', (req, res) => productsInfo.addNewTags(req, res))
+app.post('/api/tags/delete', (req, res) => productsInfo.deleteTags(req, res))
 
 app.post('/api/order/create', (req, res) => ordersService.createNewOrder(req, res))
 app.get('/api/order/:id', (req, res) => ordersService.getOrder(req, res))
