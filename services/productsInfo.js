@@ -83,6 +83,7 @@ module.exports = {
 
 		newTagsAddFun(tags)
 
+
 		Products.findByIdAndUpdate(id, {
 			"name": name,
 			"price": price,
@@ -94,6 +95,20 @@ module.exports = {
 			if(err) res.json({success: false})
 			else res.json({success: true})
 		})
+		}
+		else res.json({success:false, message:"where is the admin?"})
+	},
+
+	deleteProducts : async (req, res) => {
+		if(req.session.active){
+			const ids = req.body.ids
+			Products.deleteMany({_id: {
+				$in: ids
+			}})
+			.then((result, err) => {
+				if(err) res.json({success: false, message: "something went wrong"})
+				else res.json({success: true, message: `Succesfully deleted selected products` })
+			})
 		}
 		else res.json({success:false, message:"where is the admin?"})
 	},
