@@ -86,6 +86,7 @@ app.get('/api/admin/isLoggedIn', (req, res) => adminDashboard.isLoggedIn(req, re
 app.get('/api/images/:name', (req, res) => imageManage.getImage(req, res))
 app.get('/api/images/delete/:name', (req, res) => imageManage.deleteImage(req, res))
 
+
 app.get('/api/constants', (req, res) => res.json({
     STANDARD_HOURS: constants.standard_hours,
     CLOSED_AT: constants.closed_at,
