@@ -83,7 +83,6 @@ module.exports = {
 
 		newTagsAddFun(tags)
 
-
 		Products.findByIdAndUpdate(id, {
 			"name": name,
 			"price": price,
