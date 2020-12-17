@@ -1,5 +1,5 @@
 const Products = require('../models/products')
-const imageManage = require('./imageManage')
+const Tags = require('../models/tags')
 
 module.exports = {
 
@@ -58,7 +58,17 @@ module.exports = {
 	if(req.session.active){
 		const id = req.params.id
 		const {name, price, quantity, image, description, tags} = req.body
-		console.log(tags)
+
+		tags.forEach(async element => {
+
+			const tag = new Tags({
+				name: element
+			})
+
+			tag.save((err) => {
+				if(err) console.log(`Couldnt add tag ${element}` )
+			})
+		});
 
 		Products.findByIdAndUpdate(id, {
 			"name": name,
@@ -78,6 +88,17 @@ module.exports = {
 	addNewProduct: async (req, res) => {
 		const {name, price, description, quantity, tags} = req.body.productData
 		const image = req.body.name
+
+		tags.forEach(async element => {
+
+			const tag = new Tags({
+				name: element
+			})
+
+			tag.save((err) => {
+				if(err) console.log(`Couldnt add tag ${element}` )
+			})
+		});
 
 		if(!name || !price ) {
 			res.json({success: "false", message: "Brak wymaganych pól"})
@@ -105,5 +126,10 @@ module.exports = {
 			success: true,
 			message: "Product succesfully added"
 		})
+	},
+
+	getAllTags: async (req, res) => {
+		const tags = await Tags.find()
+		res.json(tags)
 	}
 }
