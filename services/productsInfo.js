@@ -1,5 +1,27 @@
+const { deleteMany } = require('../models/products')
 const Products = require('../models/products')
-const imageManage = require('./imageManage')
+const Tags = require('../models/tags')
+
+const newTagsAddFun = tags => {
+	let skipped = 0
+
+	tags.forEach(async element => {
+
+		const tag = new Tags({
+			name: element
+		})
+
+		tag.save((err) => {
+			if(err) {
+				console.log(`Couldnt add tag ${element}`)
+				skipped++
+				console.log(skipped)
+			}
+		})
+	})
+
+	return skipped
+}
 
 module.exports = {
 
@@ -59,6 +81,9 @@ module.exports = {
 		const id = req.params.id
 		const {name, price, quantity, image, description, tags} = req.body
 
+		newTagsAddFun(tags)
+
+
 		Products.findByIdAndUpdate(id, {
 			"name": name,
 			"price": price,
@@ -92,6 +117,8 @@ module.exports = {
 		const {name, price, description, quantity, tags} = req.body.productData
 		const image = req.body.name
 
+		newTagsAddFun(tags)
+
 		if(!name || !price ) {
 			res.json({success: "false", message: "Brak wymaganych pól"})
 			return
@@ -118,5 +145,49 @@ module.exports = {
 			success: true,
 			message: "Product succesfully added"
 		})
+	},
+
+	addNewTags: async (req, res) => {
+
+		const tags = req.body.tags
+
+		const skipped = newTagsAddFun(tags)
+
+		res.json({message: `Added new tags. Skipped ${skipped} tags due to duplicates`})
+
+	},
+
+	getAllTags: async (req, res) => {
+		const tags = await Tags.find()
+		const productsTags = (await Products.find()).map(p => p.tags).flat()
+		const resJson = []
+		tags.forEach(t => {
+			if(productsTags.includes(t.name)){
+				resJson.push({
+					tag: t,
+					isBound: true
+				})
+			}
+			else
+				resJson.push({
+					tag: t,
+					isBound: false
+				})
+		})
+		console.log(resJson)
+		res.json(resJson)
+	},
+
+	deleteTags: async (req, res) =>{
+		const tags = req.body.tags
+		const errs = []
+
+		tags.forEach(async element => {
+			const del = Tags.findByIdAndDelete(element._id).then((result, err) => {
+				if(err) errs.push(err)
+			})
+		})
+
+		res.json({message: `deletion done, skipped ${errs.length} due to errors`})
 	}
 }
