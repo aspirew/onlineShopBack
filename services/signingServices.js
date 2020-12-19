@@ -23,6 +23,7 @@ module.exports = {
 			res.json({
 				success: true
 			})
+			req.session.orderId = null
 			req.session.email = email
 			req.session._id = result._id
 			req.session.save()

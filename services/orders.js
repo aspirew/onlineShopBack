@@ -7,9 +7,7 @@ module.exports = {
 
     createNewOrder: (req, res) => {
 
-		console.log(req.session)
-
-        const email = req.session.email || undefined // set to logged in user or undefined
+        const email = req.session.email || undefined
         const cartData = req.body.products
 		const value = req.body.value
 		
@@ -26,7 +24,13 @@ module.exports = {
 
 		newOrder.save((err, entity) => {
 		  	if(err) res.json({success: false, message: "coś poszło nie tak"})
-		  	else res.json({success: true, message: "zamówienie utworzone", id: entity.id})
+		  	else {
+				if(!req.session.email){
+					req.session.orderId = entity._id
+					req.session.save()
+				}
+				  res.json({success: true, message: "zamówienie utworzone", id: entity.id})
+			  }
 		})
 	},
 	
@@ -99,8 +103,10 @@ module.exports = {
 			deliveryDetails: deliveryData,
 			status: constants.order_status[1]
 		}).then((err, result) =>{
-			if(!result)
+			if(!result){
 				res.json({success: true, message: "Zamówienie potwierdzone"})
+				req.session.orderId = null
+			}
 			else res.json({success: false, message: "Coś poszło nie tak"})
 		})
 	}

@@ -61,6 +61,15 @@ changePass: async (req, res) => {
         res.json({status: true})
     else
         res.json({status: false})
+},
+
+checkIfOrderInitialized: async (req, res) => {
+    if(req.session.orderId){
+        res.json({order_id: req.session.orderId, status: true})
+    }
+    else {
+        res.json({order_id: null, status: false})
+    }
 }
 
 }
