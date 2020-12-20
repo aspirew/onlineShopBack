@@ -1,19 +1,22 @@
 const Order = require("../models/order")
 
 const mongoose = require('mongoose');
-const constants = require("../constants")
+const constants = require("../constants");
+const Products = require("../models/products");
 
 module.exports = {
 
-    createNewOrder: (req, res) => {
+    createNewOrder: async (req, res) => {
 
-		console.log(req.session)
-
-        const email = req.session.email || undefined // set to logged in user or undefined
+        const email = req.session.email || undefined
         const cartData = req.body.products
 		const value = req.body.value
-		
-		console.log(email)
+
+		console.log(cartData)
+
+		await cartData.forEach(async p => {
+			await Products.findByIdAndUpdate(p.productID, {"$inc" : {"quantity": -p.quantity}})
+		})
 
         newOrder = new Order({
 			email: email,
@@ -26,7 +29,13 @@ module.exports = {
 
 		newOrder.save((err, entity) => {
 		  	if(err) res.json({success: false, message: "coś poszło nie tak"})
-		  	else res.json({success: true, message: "zamówienie utworzone", id: entity.id})
+		  	else {
+				if(!req.session.email){
+					req.session.orderId = entity._id
+					req.session.save()
+				}
+				  res.json({success: true, message: "zamówienie utworzone", id: entity.id})
+			  }
 		})
 	},
 	
@@ -76,9 +85,8 @@ module.exports = {
 				result: result
 			})
 		}
-
 	},
-
+	
 	changeStatus: async (req, res) => {
 		const {id, status} = req.body
 		await Order.findByIdAndUpdate(id, {
@@ -99,8 +107,10 @@ module.exports = {
 			deliveryDetails: deliveryData,
 			status: constants.order_status[1]
 		}).then((err, result) =>{
-			if(!result)
+			if(!result){
 				res.json({success: true, message: "Zamówienie potwierdzone"})
+				req.session.orderId = null
+			}
 			else res.json({success: false, message: "Coś poszło nie tak"})
 		})
 	}

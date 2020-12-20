@@ -28,7 +28,10 @@ const dbConnOptions = JSON.parse(fs.readFileSync(path.join(__dirname, 'config', 
 app.use(session({
     secret: process.env.session_secret,
     saveUnitialized: false,
-    resave: false
+    resave: false,
+    cookie: {
+        maxAge: 1000 * 60 * 30
+    }
 }))
 
 mongoose.Promise = Promise
@@ -48,6 +51,7 @@ app.post('/api/changePass', (req, res) => userManage.changePass(req, res))
 
 app.get('/api/data', (req, res) => userManage.userInfo(req, res))
 app.post('/api/data', (req, res) => userManage.userInfo(req, res))
+app.get('/api/data/unregisteredOrderInitialized', (req, res) => userManage.checkIfOrderInitialized(req, res))
 app.get('/api/services', (req, res) => servicesInfo.allServices(req, res))
 app.get('/api/services/:id', (req, res) => servicesInfo.serviceById(req, res))
 app.get('/api/reservations', (req, res) => servicesInfo.currentReservations(req, res))
