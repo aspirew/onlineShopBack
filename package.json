@@ -17,6 +17,8 @@
     "express-session": "^1.17.1",
     "mongoose": "^5.9.23",
     "multer": "^1.4.2",
-    "nodemon": "^2.0.4"
+    "nodemailer": "^6.4.17",
+    "nodemon": "^2.0.4",
+    "secure-random-password": "^0.2.2"
   }
 }

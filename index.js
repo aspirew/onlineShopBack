@@ -48,6 +48,7 @@ app.post('/api/register', (req, res) => signingServices.register(req, res))
 app.get('/api/isLoggedIn', (req, res) => res.json({ status: !!req.session.email }))
 app.get('/api/logout', (req, res) => signingServices.logout(req, res))
 app.post('/api/changePass', (req, res) => userManage.changePass(req, res))
+app.get('/api/recover/:email', (req, res) => userManage.recoverPassword(req, res))
 
 app.get('/api/data', (req, res) => userManage.userInfo(req, res))
 app.post('/api/data', (req, res) => userManage.userInfo(req, res))
