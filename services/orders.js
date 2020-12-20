@@ -1,17 +1,22 @@
 const Order = require("../models/order")
 
 const mongoose = require('mongoose');
-const constants = require("../constants")
+const constants = require("../constants");
+const Products = require("../models/products");
 
 module.exports = {
 
-    createNewOrder: (req, res) => {
+    createNewOrder: async (req, res) => {
 
         const email = req.session.email || undefined
         const cartData = req.body.products
 		const value = req.body.value
-		
-		console.log(email)
+
+		console.log(cartData)
+
+		await cartData.forEach(async p => {
+			await Products.findByIdAndUpdate(p.productID, {"$inc" : {"quantity": -p.quantity}})
+		})
 
         newOrder = new Order({
 			email: email,
@@ -80,9 +85,8 @@ module.exports = {
 				result: result
 			})
 		}
-
 	},
-
+	
 	changeStatus: async (req, res) => {
 		const {id, status} = req.body
 		await Order.findByIdAndUpdate(id, {

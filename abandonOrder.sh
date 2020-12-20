@@ -1,0 +1,1 @@
+mongo --quiet --username mo16034_sklep --password rNntVp9ZFrY7nKvUrv75 --authenticationDatabase mo16034_sklep --host 136.243.156.104 --port 27017 < ~/domains/rav215.nold.ct8.pl/mongoCronTasks.js 
