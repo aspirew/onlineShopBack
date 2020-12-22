@@ -1,5 +1,8 @@
-
+const pass = require('secure-random-password')
+const bcrypt = require('bcrypt')
 const User = require('../models/users')
+
+const emailService = require('./emailSerivce')
 
 module.exports = {
 
@@ -56,11 +59,44 @@ updateUserCart: async (req, res) => {
 },
 
 changePass: async (req, res) => {
-    const result = await User.findOneAndUpdate({_id: req.session._id, password: req.body.cPass}, {password: req.body.newPass})
-    if(result)
+
+    const result = await User.findById(req.session._id)
+    if(result){
+        console.log(result.password)
+        const isSame = await bcrypt.compare(req.body.cPass, result.password);
+        console.log(isSame)
+        if(isSame){
+            console.log(req.body.newPass)
+            const salt = await bcrypt.genSalt(Math.random() * 10 + 1)
+            const hash = await bcrypt.hash(req.body.newPass, salt)
+            await User.findByIdAndUpdate(req.session._id, {"$set" : {"password" : hash}})
+            console.log(await bcrypt.compare(req.body.newPass, hash))
+            console.log(hash)
+            res.json({status: true})
+        }
+        else
+            res.json({status: false})
+    }
+},
+
+recoverPassword: async (req, res) => {
+    const exists = await User.findOne({"email" : req.params.email})
+
+    if(exists){
+        const newPass = pass.randomPassword()
+        const salt = await bcrypt.genSalt(Math.random() * 10 + 1)
+        const hash = await bcrypt.hash(newPass, salt)
+
+        await User.findByIdAndUpdate(exists._id, {"$set" : { "password": hash }})
+
+        emailService.sendPassRecoveryEmail(req.params.email, newPass)
+
         res.json({status: true})
-    else
+
+    }
+    else{
         res.json({status: false})
+    }
 },
 
 checkIfOrderInitialized: async (req, res) => {
